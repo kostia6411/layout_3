@@ -4,8 +4,7 @@ import os
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    id = 1
-    while id <= 10:
+    for id in range(10):
         url = f"https://tululu.org/txt.php?id={id}"
 
         response = requests.get(url)
@@ -17,4 +16,3 @@ if __name__ == '__main__':
         with open(filename, 'wb') as file:
             file.write(response.content)
 
-        id = id+1
