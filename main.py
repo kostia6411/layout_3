@@ -36,8 +36,14 @@ if __name__ == '__main__':
             tag = soup.find('h1')
             text = tag.text.split("::", maxsplit=1)
 
-            tag_img = soup.find(class_="bookimage")
+            tag_comments = soup.find_all(class_="texts")
 
+            for comment in tag_comments:
+                comments = comment.find("span")
+                comments_text = comments.text
+                # print(comments_text)
+
+            tag_img = soup.find(class_="bookimage")
             img_link = tag_img.find("img")['src']
 
             book_name = text[0].strip()
