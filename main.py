@@ -36,11 +36,20 @@ if __name__ == '__main__':
             tag = soup.find('h1')
             text = tag.text.split("::", maxsplit=1)
 
-            tag_comments = soup.find_all(class_="texts")
+            genres = []
+            genre_tag = soup.find_all(class_="d_book")[1]
+            genre_links = genre_tag.find_all("a")
+            # print(genre_links)
+            for genre in genre_links:
+                genres.append(genre.text)
+            #     print(genre.text)
+            # print(genres)
 
+            comments = []
+            tag_comments = soup.find_all(class_="texts")
             for comment in tag_comments:
-                comments = comment.find("span")
-                comments_text = comments.text
+                comment_content = comment.find(class_="black")
+                comments.append(comment_content.text)
                 # print(comments_text)
 
             tag_img = soup.find(class_="bookimage")
@@ -58,7 +67,7 @@ if __name__ == '__main__':
             imgpath = os.path.join('images', f'{img_name[2]}')
             # print(imgpath)
 
-            download_txt(filepath, response)
+            # download_txt(filepath, response)
             download_image(imgpath)
         except requests.HTTPError:
             print("Книга не найдена")
