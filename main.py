@@ -3,6 +3,7 @@ import os
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 import urllib.parse
+import argparse
 
 
 def download_txt(filepath, response):
@@ -56,7 +57,14 @@ if __name__ == '__main__':
     os.makedirs("Books", exist_ok=True)
     os.makedirs("images", exist_ok=True)
 
-    for id in range(1, 10):
+    parser = argparse.ArgumentParser(
+        description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
+    )
+    parser.add_argument('--start_id', help='Начало',default=1, type=int)
+    parser.add_argument('--end_id', help='Конец',default=10, type=int)
+    args = parser.parse_args()
+
+    for id in range(args.start_id, args.end_id):
         url = f"https://tululu.org/txt.php?id={id}"
 
         try:
@@ -67,7 +75,6 @@ if __name__ == '__main__':
             response_author = requests.get(f"https://tululu.org/b{id}/")
 
             book_info = parse_book_page(response_author)
-            print(book_info["img_link"])
 
             img_name = book_info["img_link"].split("/", maxsplit=-1)
 
