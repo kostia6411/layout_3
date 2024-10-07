@@ -4,10 +4,10 @@
 
 ### Как установить
 
-Python3 должен быть уже установлен. Установите библиотеку BeautifulSoup4 консольной командой: 
+Python3 должен быть уже установлен. Затем используйте `pip` (или `pip3`, есть конфликт с Python2) для установки зависимостей:
 
 ```
-$ pip install requests BeautifulSoup4 lxml
+pip install -r requirements.txt
 ```
 
 ### Как запустить 
