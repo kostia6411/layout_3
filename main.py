@@ -82,7 +82,7 @@ if __name__ == '__main__':
             imgpath = os.path.join('images', f'{img_name[2]}')
 
 
-            # download_txt(filepath, response)
+            download_txt(filepath, response)
             download_image(imgpath, book_info["img_link"])
         except requests.HTTPError:
             print("Книга не найдена")
