@@ -44,14 +44,14 @@ def parse_book_page(response):
     sort_book_name = sanitize_filename(book_name)
     auhtor = text[1].strip()
 
-    book_info = {
+    book_elements = {
         "auhtor": auhtor,
         "book_name": sort_book_name,
         "genre": genres,
         "comments": comments,
         "img_link": img_link
     }
-    return book_info
+    return book_elements
 
 if __name__ == '__main__':
     os.makedirs("Books", exist_ok=True)
@@ -74,18 +74,18 @@ if __name__ == '__main__':
             response.raise_for_status()
             check_for_redirect(response)
 
-            response_author = requests.get(f"https://tululu.org/b{number}/")
+            author = requests.get(f"https://tululu.org/b{number}/")
 
-            book_info = parse_book_page(response_author)
+            book_elements = parse_book_page(author)
 
-            img_name = book_info["img_link"].split("/", maxsplit=-1)
+            img_name = book_elements["img_link"].split("/", maxsplit=-1)
 
-            filepath = os.path.join('Books', f'{book_info["book_name"]}.txt')
+            filepath = os.path.join('Books', f'{book_elements["book_name"]}.txt')
             imgpath = os.path.join('images', f'{img_name[2]}')
 
 
             download_txt(filepath, response)
-            download_image(imgpath, book_info["img_link"], number)
+            download_image(imgpath, book_elements["img_link"], number)
         except requests.HTTPError:
             print("Книга не найдена")
 
