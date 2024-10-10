@@ -71,6 +71,7 @@ if __name__ == '__main__':
             check_for_redirect(response)
 
             author = requests.get(f"https://tululu.org/b{number}/")
+            author.raise_for_status()
 
             book_elements = parse_book_page(author)
 
