@@ -25,17 +25,13 @@ def parse_book_page(response):
     tag = soup.find('h1')
     text = tag.text.split("::", maxsplit=1)
 
-    genres = []
     genre_tag = soup.find_all(class_="d_book")[1]
     genre_links = genre_tag.find_all("a")
-    for genre in genre_links:
-        genres.append(genre.text)
+    genres = [genre.text for genre in genre_links]
 
-    comments = []
     tag_comments = soup.find_all(class_="texts")
-    for comment in tag_comments:
-        comment_content = comment.find(class_="black")
-        comments.append(comment_content.text)
+    comments = [comment.find(class_="black") for comment in tag_comments]
+
 
     tag_img = soup.find(class_="bookimage")
     img_link = tag_img.find("img")['src']
