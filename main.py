@@ -10,10 +10,10 @@ def download_txt(filepath, response):
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
-def download_image(imgpath, img_link, number):
-    response_img = requests.get(urllib.parse.urljoin(f"https://tululu.org/b{number}/", f"{img_link}"))
+def download_image(img_path, img_link):
+    response_img = requests.get(img_link)
     response_img.raise_for_status()
-    with open(imgpath, 'wb') as file:
+    with open(img_path, 'wb') as file:
         file.write(response_img.content)
 
 def check_for_redirect(response):
@@ -60,9 +60,11 @@ if __name__ == '__main__':
     parser.add_argument('--end_id', help='Конец',default=10, type=int)
     args = parser.parse_args()
 
+
     for number in range(args.start_id, args.end_id):
         url = f"https://tululu.org/txt.php"
         payload = {'id': number}
+
 
 
         try:
@@ -75,14 +77,16 @@ if __name__ == '__main__':
 
             book_elements = parse_book_page(author)
 
+            img_link = urllib.parse.urljoin(f"https://tululu.org/b{number}/", f"{book_elements['img_link']}")
+
             img_name = book_elements["img_link"].split("/", maxsplit=-1)
 
             filepath = os.path.join('Books', f'{book_elements["book_name"]}.txt')
-            imgpath = os.path.join('images', f'{img_name[2]}')
+            img_path = os.path.join('images', f'{img_name[2]}')
 
 
             download_txt(filepath, response)
-            download_image(imgpath, book_elements["img_link"], number)
+            download_image(img_path, img_link,)
         except requests.HTTPError:
             print("Книга не найдена")
 
