@@ -91,4 +91,6 @@ if __name__ == '__main__':
             download_image(img_path, img_link,)
         except requests.HTTPError:
             print("Книга не найдена")
+        except requests.ConnectionError:
+            print("Произошла ошибка подключения.")
 
