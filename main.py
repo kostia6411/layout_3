@@ -11,10 +11,10 @@ def download_txt(filepath, response):
         file.write(response.content)
 
 def download_image(img_path, img_link):
-    response_img = requests.get(img_link)
-    response_img.raise_for_status()
+    img_response = requests.get(img_link)
+    img_response.raise_for_status()
     with open(img_path, 'wb') as file:
-        file.write(response_img.content)
+        file.write(img_response.content)
 
 def check_for_redirect(response):
     if response.history:
