@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 import urllib.parse
 import argparse
+import time
 
 
 def download_txt(filepath, response):
@@ -93,4 +94,5 @@ if __name__ == '__main__':
             print("Книга не найдена")
         except requests.ConnectionError:
             print("Произошла ошибка подключения.")
+            time.sleep(600)
 
