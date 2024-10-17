@@ -72,12 +72,12 @@ if __name__ == '__main__':
             response.raise_for_status()
             check_for_redirect(response)
 
-            author = requests.get(f"https://tululu.org/b{number}/")
-            author.raise_for_status()
-            check_for_redirect(author)
+            book_page = requests.get(f"https://tululu.org/b{number}/")
+            book_page.raise_for_status()
+            check_for_redirect(book_page)
 
 
-            book_elements = parse_book_page(author)
+            book_elements = parse_book_page(book_page)
 
             img_link = urllib.parse.urljoin(f"https://tululu.org/b{number}/", f"{book_elements['img_link']}")
 
