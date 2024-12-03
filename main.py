@@ -31,7 +31,7 @@ def parse_book_page(response):
     genres = [genre.text for genre in genre_links]
 
     tag_comments = soup.find_all(class_="texts")
-    comments = [comment.find(class_="black") for comment in tag_comments]
+    comments = [comment.find(class_="black").text for comment in tag_comments]
 
 
     tag_img = soup.find(class_="bookimage")
