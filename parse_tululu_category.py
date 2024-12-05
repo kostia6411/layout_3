@@ -4,9 +4,16 @@ import urllib.parse
 from main import download_txt, download_image, parse_book_page, check_for_redirect
 import os
 import json
+import argparse
 
+parser = argparse.ArgumentParser(
+        description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
+    )
+parser.add_argument('--start_page', help='Страница с которой начинается скачивание', default=1, type=int)
+parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=4, type=int)
+args = parser.parse_args()
 
-for page in range(1, 2):
+for page in range(args.start_page, args.end_page):
     url = f"https://tululu.org/l55/{page}/"
 
     response = requests.get(url)
@@ -25,7 +32,7 @@ for page in range(1, 2):
 
         link = urllib.parse.urljoin("https://tululu.org/", tag)
 
-        # print(tag[1:-1])
+        print(link)
 
         url_text = f"https://tululu.org/txt.php"
         payload = {'id': tag[1:-1]}
@@ -46,8 +53,8 @@ for page in range(1, 2):
         filepath = os.path.join('Books', f'{book_elements["book_name"]}.txt')
         img_path = os.path.join('images', f'{img_name[2]}')
 
-        download_txt(filepath, response)
-        download_image(img_path, img_link)
+        # download_txt(filepath, response)
+        # download_image(img_path, img_link)
 
         book_elements['book_path'] = filepath
 
