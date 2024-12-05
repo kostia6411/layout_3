@@ -6,7 +6,7 @@ import os
 import json
 
 
-for page in range(1, 4):
+for page in range(1, 2):
     url = f"https://tululu.org/l55/{page}/"
 
     response = requests.get(url)
@@ -15,13 +15,13 @@ for page in range(1, 4):
 
     soup = BeautifulSoup(response.text, 'lxml')
 
-    card_book = soup.find_all('table', class_='d_book')
+    card_book = soup.select('.d_book')
 
     books_info = []
 
     for book in card_book:
 
-        tag = book.find('a')["href"]
+        tag = book.select_one('a')["href"]
 
         link = urllib.parse.urljoin("https://tululu.org/", tag)
 
@@ -46,8 +46,8 @@ for page in range(1, 4):
         filepath = os.path.join('Books', f'{book_elements["book_name"]}.txt')
         img_path = os.path.join('images', f'{img_name[2]}')
 
-        # download_txt(filepath, response)
-        # download_image(img_path, img_link,)
+        download_txt(filepath, response)
+        download_image(img_path, img_link)
 
         book_elements['book_path'] = filepath
 
