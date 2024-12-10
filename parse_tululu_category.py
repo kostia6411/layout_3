@@ -5,13 +5,22 @@ from main import download_txt, download_image, parse_book_page, check_for_redire
 import os
 import json
 import argparse
+import time
 
 parser = argparse.ArgumentParser(
         description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
     )
 parser.add_argument('--start_page', help='Страница с которой начинается скачивание', default=1, type=int)
-parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=4, type=int)
+parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=2, type=int)
+
+parser.add_argument('--dest_folder', help='название папки с результатами парсинга', default="parsing results")
+parser.add_argument('--skip_imgs', help='Не скачивать изображения', action='store_true')
+parser.add_argument('--skip_txt', help='Не скачивать текст', action='store_true')
+
 args = parser.parse_args()
+
+os.makedirs(f"{args.dest_folder}\Books", exist_ok=True)
+os.makedirs(f"{args.dest_folder}\images", exist_ok=True)
 
 for page in range(args.start_page, args.end_page):
     url = f"https://tululu.org/l55/{page}/"
@@ -32,35 +41,48 @@ for page in range(args.start_page, args.end_page):
 
         link = urllib.parse.urljoin("https://tululu.org/", tag)
 
-        print(link)
+        # print(link)
 
         url_text = f"https://tululu.org/txt.php"
-        payload = {'id': tag[1:-1]}
+        payload = {'id': tag[2:-1]}
 
-        response_text = requests.get(url_text, params=payload)
-        response_text.raise_for_status()
+        # print(payload)
 
-        book_page = requests.get(f"https://tululu.org/{tag[1:-1]}/")
-        book_page.raise_for_status()
-        check_for_redirect(book_page)
+        try:
 
-        book_elements = parse_book_page(book_page)
+            response_text = requests.get(url_text, params=payload)
+            response_text.raise_for_status()
+            check_for_redirect(response_text)
 
-        img_link = urllib.parse.urljoin(link, f"{book_elements['img_link']}")
+            book_page = requests.get(f"https://tululu.org/{tag[1:-1]}/")
+            book_page.raise_for_status()
+            check_for_redirect(book_page)
 
-        img_name = book_elements["img_link"].split("/", maxsplit=-1)
+            book_elements = parse_book_page(book_page)
 
-        filepath = os.path.join('Books', f'{book_elements["book_name"]}.txt')
-        img_path = os.path.join('images', f'{img_name[2]}')
+            img_link = urllib.parse.urljoin(link, f"{book_elements['img_link']}")
 
-        # download_txt(filepath, response)
-        # download_image(img_path, img_link)
+            img_name = book_elements["img_link"].split("/", maxsplit=-1)
 
-        book_elements['book_path'] = filepath
+            filepath = os.path.join(f'{args.dest_folder}','Books', f'{book_elements["book_name"]}.txt')
+            img_path = os.path.join(f'{args.dest_folder}','images', f'{img_name[2]}')
 
-        book_elements.update({'img_link' : img_path})
+            if not args.skip_imgs:
+                download_txt(filepath, response_text)
+            if not args.skip_txt:
+                download_image(img_path, img_link)
 
-        books_info.append(book_elements)
+            book_elements['book_path'] = filepath
+
+            book_elements.update({'img_link' : img_path})
+
+            books_info.append(book_elements)
+
+        except requests.HTTPError:
+            print("Книга не найдена")
+        except requests.ConnectionError:
+            print("Произошла ошибка подключения.")
+            time.sleep(600)
 
     # print(books_info)
 

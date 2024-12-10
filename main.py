@@ -51,8 +51,8 @@ def parse_book_page(response):
     return book_elements
 
 if __name__ == '__main__':
-    os.makedirs("Books", exist_ok=True)
-    os.makedirs("images", exist_ok=True)
+    os.makedirs("parsing results\Books", exist_ok=True)
+    os.makedirs("parsing results\images", exist_ok=True)
 
     parser = argparse.ArgumentParser(
         description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
@@ -84,8 +84,8 @@ if __name__ == '__main__':
 
             img_name = book_elements["img_link"].split("/", maxsplit=-1)
 
-            filepath = os.path.join('Books', f'{book_elements["book_name"]}.txt')
-            img_path = os.path.join('images', f'{img_name[2]}')
+            filepath = os.path.join('parsing results', 'Books', f'{book_elements["book_name"]}.txt')
+            img_path = os.path.join('parsing results', 'images', f'{img_name[2]}')
 
 
             download_txt(filepath, response)
