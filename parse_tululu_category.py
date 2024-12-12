@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(
         description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
     )
 parser.add_argument('--start_page', help='Страница с которой начинается скачивание', default=1, type=int)
-parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=2, type=int)
+parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=4, type=int)
 
 parser.add_argument('--dest_folder', help='название папки с результатами парсинга', default="parsing results")
 parser.add_argument('--skip_imgs', help='Не скачивать изображения', action='store_true')
@@ -41,12 +41,8 @@ for page in range(args.start_page, args.end_page):
 
         link = urllib.parse.urljoin("https://tululu.org/", tag)
 
-        # print(link)
-
         url_text = f"https://tululu.org/txt.php"
         payload = {'id': tag[2:-1]}
-
-        # print(payload)
 
         try:
 
@@ -84,9 +80,7 @@ for page in range(args.start_page, args.end_page):
             print("Произошла ошибка подключения.")
             time.sleep(600)
 
-    # print(books_info)
-
     books_info_json = json.dumps(books_info, ensure_ascii=False)
 
-    with open("books_info.json", "w", encoding='utf8') as my_file:
+    with open(f"{args.dest_folder}/books_info.json", "w", encoding='utf8') as my_file:
         my_file.write(books_info_json)
