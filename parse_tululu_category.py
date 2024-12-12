@@ -33,7 +33,7 @@ for page in range(args.start_page, args.end_page):
 
     card_book = soup.select('.d_book')
 
-    books_info = []
+    books_particulars = []
 
     for book in card_book:
 
@@ -72,7 +72,7 @@ for page in range(args.start_page, args.end_page):
 
             book_elements.update({'img_link' : img_path})
 
-            books_info.append(book_elements)
+            books_particulars.append(book_elements)
 
         except requests.HTTPError:
             print("Книга не найдена")
@@ -80,7 +80,7 @@ for page in range(args.start_page, args.end_page):
             print("Произошла ошибка подключения.")
             time.sleep(600)
 
-    books_info_json = json.dumps(books_info, ensure_ascii=False)
+    books_info_json = json.dumps(books_particulars, ensure_ascii=False)
 
     with open(f"{args.dest_folder}/books_info.json", "w", encoding='utf8') as my_file:
         my_file.write(books_info_json)
