@@ -23,19 +23,19 @@ def check_for_redirect(response):
 
 def parse_book_page(response):
     soup = BeautifulSoup(response.text, 'lxml')
-    tag = soup.find('h1')
+    tag = soup.select_one('h1')
     text = tag.text.split("::", maxsplit=1)
 
-    genre_tag = soup.find_all(class_="d_book")[1]
+    genre_tag = soup.select("d_book")[1]
     genre_links = genre_tag.find_all("a")
     genres = [genre.text for genre in genre_links]
 
-    tag_comments = soup.find_all(class_="texts")
-    comments = [comment.find(class_="black").text for comment in tag_comments]
+    tag_comments = soup.select("texts")
+    comments = [comment.select_one("black").text for comment in tag_comments]
 
 
-    tag_img = soup.find(class_="bookimage")
-    img_link = tag_img.find("img")['src']
+    tag_img = soup.select_one("bookimage")
+    img_link = tag_img.select_one("img")['src']
 
     book_name = text[0].strip()
     sort_book_name = sanitize_filename(book_name)
