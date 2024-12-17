@@ -26,9 +26,15 @@ def main():
     for page in range(args.start_page, args.end_page):
         url = f"https://tululu.org/l55/{page}/"
 
-        response = requests.get(url)
-        response.raise_for_status()
-        check_for_redirect(response)
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            check_for_redirect(response)
+        except requests.HTTPError:
+            print("Книга не найдена")
+        except requests.ConnectionError:
+            print("Произошла ошибка подключения.")
+            time.sleep(600)
 
         soup = BeautifulSoup(response.text, 'lxml')
 
