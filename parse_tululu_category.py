@@ -7,80 +7,84 @@ import json
 import argparse
 import time
 
-parser = argparse.ArgumentParser(
-        description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
-    )
-parser.add_argument('--start_page', help='Страница с которой начинается скачивание', default=1, type=int)
-parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=4, type=int)
+def main():
+    parser = argparse.ArgumentParser(
+            description='Программа скачивает книги с сайта tululu.org и достаёт данные о книге'
+        )
+    parser.add_argument('--start_page', help='Страница с которой начинается скачивание', default=1, type=int)
+    parser.add_argument('--end_page', help='Страница с которой заканчивается скачивание', default=4, type=int)
 
-parser.add_argument('--dest_folder', help='название папки с результатами парсинга', default="parsing results")
-parser.add_argument('--skip_imgs', help='Не скачивать изображения', action='store_true')
-parser.add_argument('--skip_txt', help='Не скачивать текст', action='store_true')
+    parser.add_argument('--dest_folder', help='название папки с результатами парсинга', default="parsing results")
+    parser.add_argument('--skip_imgs', help='Не скачивать изображения', action='store_true')
+    parser.add_argument('--skip_txt', help='Не скачивать текст', action='store_true')
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-os.makedirs(f"{args.dest_folder}\Books", exist_ok=True)
-os.makedirs(f"{args.dest_folder}\images", exist_ok=True)
+    os.makedirs(f"{args.dest_folder}\Books", exist_ok=True)
+    os.makedirs(f"{args.dest_folder}\images", exist_ok=True)
 
-for page in range(args.start_page, args.end_page):
-    url = f"https://tululu.org/l55/{page}/"
+    for page in range(args.start_page, args.end_page):
+        url = f"https://tululu.org/l55/{page}/"
 
-    response = requests.get(url)
-    response.raise_for_status()
-    check_for_redirect(response)
+        response = requests.get(url)
+        response.raise_for_status()
+        check_for_redirect(response)
 
-    soup = BeautifulSoup(response.text, 'lxml')
+        soup = BeautifulSoup(response.text, 'lxml')
 
-    card_book = soup.select('.d_book')
+        card_book = soup.select('.d_book')
 
-    books_particulars = []
+        books_particulars = []
 
-    for book in card_book:
+        for book in card_book:
 
-        tag = book.select_one('a')["href"]
+            tag = book.select_one('a')["href"]
 
-        link = urllib.parse.urljoin("https://tululu.org/", tag)
+            link = urllib.parse.urljoin("https://tululu.org/", tag)
 
-        url_text = f"https://tululu.org/txt.php"
-        payload = {'id': tag[2:-1]}
+            url_text = f"https://tululu.org/txt.php"
+            payload = {'id': tag[2:-1]}
 
-        try:
+            try:
 
-            response_text = requests.get(url_text, params=payload)
-            response_text.raise_for_status()
-            check_for_redirect(response_text)
+                response_text = requests.get(url_text, params=payload)
+                response_text.raise_for_status()
+                check_for_redirect(response_text)
 
-            book_page = requests.get(f"https://tululu.org/{tag[1:-1]}/")
-            book_page.raise_for_status()
-            check_for_redirect(book_page)
+                book_page = requests.get(f"https://tululu.org/{tag[1:-1]}/")
+                book_page.raise_for_status()
+                check_for_redirect(book_page)
 
-            book_elements = parse_book_page(book_page)
+                book_elements = parse_book_page(book_page)
 
-            img_link = urllib.parse.urljoin(link, f"{book_elements['img_link']}")
+                img_link = urllib.parse.urljoin(link, f"{book_elements['img_link']}")
 
-            img_name = book_elements["img_link"].split("/", maxsplit=-1)
+                img_name = book_elements["img_link"].split("/", maxsplit=-1)
 
-            filepath = os.path.join(f'{args.dest_folder}','Books', f'{book_elements["book_name"]}.txt')
-            img_path = os.path.join(f'{args.dest_folder}','images', f'{img_name[2]}')
+                filepath = os.path.join(f'{args.dest_folder}','Books', f'{book_elements["book_name"]}.txt')
+                img_path = os.path.join(f'{args.dest_folder}','images', f'{img_name[2]}')
 
-            if not args.skip_imgs:
-                download_txt(filepath, response_text)
-            if not args.skip_txt:
-                download_image(img_path, img_link)
+                if not args.skip_imgs:
+                    download_txt(filepath, response_text)
+                if not args.skip_txt:
+                    download_image(img_path, img_link)
 
-            book_elements['book_path'] = filepath
+                book_elements['book_path'] = filepath
 
-            book_elements.update({'img_link' : img_path})
+                book_elements.update({'img_link' : img_path})
 
-            books_particulars.append(book_elements)
+                books_particulars.append(book_elements)
 
-        except requests.HTTPError:
-            print("Книга не найдена")
-        except requests.ConnectionError:
-            print("Произошла ошибка подключения.")
-            time.sleep(600)
+            except requests.HTTPError:
+                print("Книга не найдена")
+            except requests.ConnectionError:
+                print("Произошла ошибка подключения.")
+                time.sleep(600)
 
-    books_info_json = json.dumps(books_particulars, ensure_ascii=False)
+        books_info_json = json.dumps(books_particulars, ensure_ascii=False)
 
-    with open(f"{args.dest_folder}/books_info.json", "w", encoding='utf8') as my_file:
-        my_file.write(books_info_json)
+        with open(f"{args.dest_folder}/books_info.json", "w", encoding='utf8') as my_file:
+            my_file.write(books_info_json)
+
+if __name__ == '__main__':
+    main()
