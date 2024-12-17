@@ -48,12 +48,12 @@ def main():
 
             link = urllib.parse.urljoin("https://tululu.org/", tag)
 
-            url_text = f"https://tululu.org/txt.php"
+            text_url = f"https://tululu.org/txt.php"
             payload = {'id': tag[2:-1]}
 
             try:
 
-                response_text = requests.get(url_text, params=payload)
+                response_text = requests.get(text_url, params=payload)
                 response_text.raise_for_status()
                 check_for_redirect(response_text)
 
